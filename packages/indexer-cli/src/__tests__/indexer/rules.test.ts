@@ -267,7 +267,7 @@ describe('Indexer rules tests', () => {
         },
       )
       cliTest(
-        'Indexer rules set subgraph id - success - offchain',
+        'Indexer rules set subgraph id offchain - success',
         [
           'indexer',
           'rules',
@@ -289,6 +289,23 @@ describe('Indexer rules tests', () => {
         'Indexer rules set deployment id - success',
         ['indexer', 'rules', 'set', 'QmZZtzZkfzCWMNrajxBf22q7BC9HzoT5iJUK3S8qA6zNZr'],
         'references/indexer-rule-deployment-rules',
+        {
+          expectedExitCode: 0,
+          cwd: baseDir,
+          timeout: 10000,
+        },
+      )
+      cliTest(
+        'Indexer rules set deployment id supported - success',
+        [
+          'indexer',
+          'rules',
+          'set',
+          'QmVEV7RA2U6BJT9Ssjxcfyrk4YQUnVqSRNX4TvYagjzh9h',
+          'requireSupported',
+          'false',
+        ],
+        'references/indexer-rule-deployment-supported',
         {
           expectedExitCode: 0,
           cwd: baseDir,

@@ -45,6 +45,7 @@ const SET_INDEXING_RULE_MUTATION = gql`
       minAverageQueryFees
       custom
       decisionBasis
+      requireSupported
     }
   }
 `
@@ -75,6 +76,7 @@ const INDEXING_RULE_QUERY = gql`
       minAverageQueryFees
       custom
       decisionBasis
+      requireSupported
     }
   }
 `
@@ -93,6 +95,7 @@ const INDEXING_RULES_QUERY = gql`
       minAverageQueryFees
       custom
       decisionBasis
+      requireSupported
     }
   }
 `
@@ -110,6 +113,7 @@ const defaults: IndexerManagementDefaults = {
   globalIndexingRule: {
     allocationAmount: parseGRT('100'),
     parallelAllocations: 1,
+    requireSupported: true,
   },
 }
 
@@ -166,6 +170,7 @@ describe('Indexing rules', () => {
       minAverageQueryFees: null,
       custom: null,
       decisionBasis: IndexingDecisionBasis.RULES,
+      requireSupported: true,
     }
 
     // Update the rule and ensure the right data is returned
@@ -194,6 +199,7 @@ describe('Indexing rules', () => {
       minAverageQueryFees: '5',
       custom: JSON.stringify({ foo: 'bar' }),
       decisionBasis: IndexingDecisionBasis.RULES,
+      requireSupported: true,
     }
 
     const expected = {
@@ -230,6 +236,7 @@ describe('Indexing rules', () => {
       minAverageQueryFees: null,
       custom: null,
       decisionBasis: IndexingDecisionBasis.RULES,
+      requireSupported: true,
     }
 
     // Write the original
@@ -281,6 +288,7 @@ describe('Indexing rules', () => {
       minAverageQueryFees: null,
       custom: null,
       decisionBasis: IndexingDecisionBasis.OFFCHAIN,
+      requireSupported: true,
     }
 
     // Write the orginal
@@ -294,6 +302,7 @@ describe('Indexing rules', () => {
       allocationAmount: null,
       maxSignal: '3',
       decisionBasis: IndexingDecisionBasis.ALWAYS,
+      requireSupported: false,
     }
 
     const expected = {
@@ -361,6 +370,7 @@ describe('Indexing rules', () => {
       allocationAmount: '1',
       minSignal: '2',
       decisionBasis: IndexingDecisionBasis.OFFCHAIN,
+      requireSupported: false,
     }
 
     const globalExpected = {
@@ -372,6 +382,7 @@ describe('Indexing rules', () => {
       minAverageQueryFees: null,
       custom: null,
       decisionBasis: IndexingDecisionBasis.NEVER,
+      requireSupported: true,
     }
 
     const deploymentExpected = {
@@ -383,6 +394,7 @@ describe('Indexing rules', () => {
       minAverageQueryFees: null,
       custom: null,
       decisionBasis: IndexingDecisionBasis.OFFCHAIN,
+      requireSupported: false,
     }
 
     // Write the orginals
@@ -437,6 +449,7 @@ describe('Indexing rules', () => {
       minAverageQueryFees: null,
       custom: null,
       decisionBasis: IndexingDecisionBasis.RULES,
+      requireSupported: true,
     }
 
     // Write the rule
@@ -467,6 +480,7 @@ describe('Indexing rules', () => {
       identifier: '0xa4e311bfa7edabed7b31d93e0b3e751659669852ef46adbedd44dc2454db4bf3',
       identifierType: SubgraphIdentifierType.DEPLOYMENT,
       allocationAmount: '1',
+      requireSupported: true,
     }
 
     const expectedBefore = {
@@ -519,6 +533,7 @@ describe('Indexing rules', () => {
       minSignal: '1',
       decisionBasis: IndexingDecisionBasis.NEVER,
       minAverageQueryFees: '1',
+      requireSupported: true,
     }
 
     const deploymentInput = {
@@ -527,6 +542,7 @@ describe('Indexing rules', () => {
       allocationAmount: '1',
       minSignal: '2',
       decisionBasis: IndexingDecisionBasis.OFFCHAIN,
+      requireSupported: false,
     }
 
     const globalExpected = {
@@ -537,6 +553,7 @@ describe('Indexing rules', () => {
       minStake: null,
       custom: null,
       decisionBasis: IndexingDecisionBasis.NEVER,
+      requireSupported: true,
     }
 
     const deploymentExpected = {
@@ -548,6 +565,7 @@ describe('Indexing rules', () => {
       minAverageQueryFees: null,
       custom: null,
       decisionBasis: IndexingDecisionBasis.OFFCHAIN,
+      requireSupported: false,
     }
 
     const deploymentMergedExpected = {
@@ -559,6 +577,7 @@ describe('Indexing rules', () => {
       minAverageQueryFees: '1',
       custom: null,
       decisionBasis: IndexingDecisionBasis.OFFCHAIN,
+      requireSupported: false,
     }
 
     // Write the orginals
@@ -651,6 +670,7 @@ describe('Indexing rules', () => {
       minSignal: '1',
       decisionBasis: IndexingDecisionBasis.NEVER,
       minAverageQueryFees: '1',
+      requireSupported: false,
     }
 
     const deploymentInput = {
@@ -658,6 +678,7 @@ describe('Indexing rules', () => {
       identifierType: SubgraphIdentifierType.DEPLOYMENT,
       allocationAmount: '1',
       minSignal: '2',
+      requireSupported: true,
     }
 
     await client.mutation(SET_INDEXING_RULE_MUTATION, { rule: globalInput }).toPromise()
@@ -691,6 +712,7 @@ describe('Indexing rules', () => {
         minAverageQueryFees: null,
         minSignal: null,
         minStake: null,
+        requireSupported: true,
       },
     ])
   })

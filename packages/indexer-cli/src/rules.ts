@@ -30,7 +30,12 @@ export const parseDecisionBasis = (s: string): IndexingDecisionBasis => {
     return s as IndexingDecisionBasis
   }
 }
-
+export const parseBoolean = (
+  val: string | boolean | number | undefined | null,
+): boolean => {
+  const s = val && val.toString().toLowerCase().trim()
+  return s != 'false' && s != 'f' && s != '0'
+}
 function nullPassThrough<T, U>(fn: (x: T) => U): (x: T | null) => U | null {
   return (x: T | null) => (x === null ? null : fn(x))
 }
@@ -49,6 +54,7 @@ const INDEXING_RULE_PARSERS: Record<keyof IndexingRuleAttributes, (x: never) => 
   minAverageQueryFees: nullPassThrough(parseGRT),
   decisionBasis: nullPassThrough(parseDecisionBasis),
   custom: nullPassThrough(JSON.parse),
+  requireSupported: x => parseBoolean(x),
 }
 
 const INDEXING_RULE_FORMATTERS: Record<
@@ -68,6 +74,7 @@ const INDEXING_RULE_FORMATTERS: Record<
   minAverageQueryFees: nullPassThrough(x => utils.commify(formatGRT(x))),
   decisionBasis: x => x,
   custom: nullPassThrough(JSON.stringify),
+  requireSupported: x => x,
 }
 
 const INDEXING_RULE_CONVERTERS_FROM_GRAPHQL: Record<
@@ -87,6 +94,7 @@ const INDEXING_RULE_CONVERTERS_FROM_GRAPHQL: Record<
   minAverageQueryFees: nullPassThrough((x: string) => BigNumber.from(x)),
   decisionBasis: x => x,
   custom: nullPassThrough(JSON.stringify),
+  requireSupported: x => x,
 }
 
 const INDEXING_RULE_CONVERTERS_TO_GRAPHQL: Record<
@@ -106,6 +114,7 @@ const INDEXING_RULE_CONVERTERS_TO_GRAPHQL: Record<
   minAverageQueryFees: nullPassThrough((x: BigNumber) => x.toString()),
   decisionBasis: x => x,
   custom: nullPassThrough(JSON.stringify),
+  requireSupported: x => x,
 }
 
 /**
@@ -251,6 +260,7 @@ export const indexingRules = async (
             minAverageQueryFees
             custom
             decisionBasis
+            requireSupported
           }
         }
       `,
@@ -286,6 +296,7 @@ export const indexingRule = async (
             minAverageQueryFees
             custom
             decisionBasis
+            requireSupported
           }
         }
       `,
@@ -324,6 +335,7 @@ export const setIndexingRule = async (
             minAverageQueryFees
             custom
             decisionBasis
+            requireSupported
           }
         }
       `,
