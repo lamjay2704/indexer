@@ -308,6 +308,12 @@ export default {
         default: false,
         group: 'Disputes',
       })
+      .option('max-lifetime', {
+        description:
+          'Maximum epoches agent keep each allocation open (default 28) ',
+        type: 'number',
+        coerce: arg => Math.max(arg, 1),
+      })
       .check(argv => {
         if (
           !argv['network-subgraph-endpoint'] &&
@@ -417,6 +423,12 @@ export default {
     if (argv.rebateClaimThreshold === 0) {
       logger.warn(
         `Minimum query fee rebate value is 0 GRT, which may lead to claiming unprofitable rebates`,
+      )
+    }
+
+    if (argv.maxLifetime < 7) {
+      logger.warn(
+        `Maximum lifetime for allocations is less than a week. This might be expensive to maintain`,
       )
     }
 
@@ -661,6 +673,7 @@ export default {
       argv.indexNodeIds,
       parseGRT(argv.defaultAllocationAmount),
       indexerAddress,
+      argv.maxLifetime,
     )
     const networkSubgraphDeployment = argv.networkSubgraphDeployment
       ? new SubgraphDeploymentID(argv.networkSubgraphDeployment)

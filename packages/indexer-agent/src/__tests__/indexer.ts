@@ -105,6 +105,7 @@ let sequelize: Sequelize
 let models: IndexerManagementModels
 let wallet: Wallet
 let address: string
+let maxLifetime: number
 let contracts: NetworkContracts
 let logger: Logger
 let indexerManagementClient: IndexerManagementClient
@@ -120,6 +121,7 @@ const setup = async () => {
   sequelize = await connectDatabase(__DATABASE__)
   models = defineIndexerManagementModels(sequelize)
   address = '0x3C17A4c7cD8929B83e4705e04020fA2B1bca2E55'
+  maxLifetime = 1
   contracts = await connectContracts(wallet, 4)
   await sequelize.sync({ force: true })
 
@@ -162,6 +164,7 @@ const setup = async () => {
     ['test'],
     parseGRT('1000'),
     address,
+    maxLifetime,
   )
 }
 

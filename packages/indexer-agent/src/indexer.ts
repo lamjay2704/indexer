@@ -62,6 +62,7 @@ export class Indexer {
   indexNodeIDs: string[]
   defaultAllocationAmount: BigNumber
   indexerAddress: string
+  maxLifetime: number | null | undefined
 
   constructor(
     logger: Logger,
@@ -71,11 +72,13 @@ export class Indexer {
     indexNodeIDs: string[],
     defaultAllocationAmount: BigNumber,
     indexerAddress: string,
+    maxLifetime: number | null | undefined,
   ) {
     this.indexerManagement = indexerManagement
     this.statusResolver = statusResolver
     this.logger = logger
     this.indexerAddress = indexerAddress
+    this.maxLifetime = maxLifetime
 
     if (adminEndpoint.startsWith('https')) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -219,6 +222,7 @@ export class Indexer {
                 identifier
                 identifierType
                 allocationAmount
+                allocationLifetime
                 parallelAllocations
                 maxAllocationPercentage
                 minSignal
@@ -292,6 +296,7 @@ export class Indexer {
                   identifier
                   identifierType
                   allocationAmount
+                  allocationLifetime
                   parallelAllocations
                   maxAllocationPercentage
                   minSignal

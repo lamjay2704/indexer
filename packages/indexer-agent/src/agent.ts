@@ -202,7 +202,11 @@ class Agent {
     )
 
     const maxAllocationEpochs = timer(600_000).tryMap(
-      () => this.network.contracts.staking.maxAllocationEpochs(),
+      () =>
+        // can i pass these 2 numbers into rule creation?
+        this.indexer.maxLifetime
+          ? this.indexer.maxLifetime
+          : this.network.contracts.staking.maxAllocationEpochs(),
       {
         onError: err =>
           this.logger.warn(`Failed to fetch max allocation epochs`, { err }),
@@ -697,7 +701,6 @@ class Agent {
 
     this.logger.info(`Reconcile allocations`, {
       currentEpoch,
-      maxAllocationEpochs,
       allocationLifetime,
       targetAllocations: targetAllocations.map(
         deployment => deployment.display,
@@ -715,7 +718,7 @@ class Agent {
       ...activeAllocations.map(allocation => allocation.subgraphDeployment.id),
     ])
 
-    // Ensure the network subgraph is never allocated towards
+    // Ensure the network subgraph is never allocated towards unless explicitly allowed
     if (
       !this.allocateOnNetworkSubgraph &&
       this.networkSubgraph.deployment?.id.bytes32
@@ -757,7 +760,7 @@ class Agent {
 
           currentEpoch,
           currentEpochStartBlock,
-          maxAllocationEpochs,
+          allocationLifetime,
         )
       },
       { concurrency: 1 },
@@ -782,6 +785,9 @@ class Agent {
       ? BigNumber.from(rule.allocationAmount)
       : this.indexer.defaultAllocationAmount
     const desiredNumberOfAllocations = 1
+    const desiredAllocationLifetime = rule?.allocationLifetime
+      ? Math.max(1, rule.allocationLifetime)
+      : maxAllocationEpochs
     const activeAllocationAmount = activeAllocations.reduce(
       (sum, allocation) => sum.add(allocation.allocatedTokens),
       BigNumber.from('0'),
@@ -795,6 +801,7 @@ class Agent {
         `Reconcile deployment allocations for deployment '${deployment.ipfsHash}'`,
         {
           desiredAllocationAmount: formatGRT(desiredAllocationAmount),
+          desiredAllocationLifetime,
 
           totalActiveAllocationAmount: formatGRT(activeAllocationAmount),
 
@@ -881,11 +888,10 @@ class Agent {
       )
     }
 
-    const lifetime = Math.max(1, maxAllocationEpochs - 1)
-
     // For allocations that have expired, let's reallocate in one transaction (closeAndAllocate)
     let expiredAllocations = activeAllocations.filter(
-      allocation => epoch >= allocation.createdAtEpoch + lifetime,
+      allocation =>
+        epoch >= allocation.createdAtEpoch + desiredAllocationLifetime,
     )
     // The allocations come from the network subgraph; due to short indexing
     // latencies, this data may be slightly outdated. Cross-check with the
