@@ -17,7 +17,7 @@ import {
 } from '@graphprotocol/indexer-common'
 import { DHeap } from '@thi.ng/heaps'
 import { ReceiptCollector } from '.'
-import { BigNumber, Contract } from 'ethers'
+import { BigNumber } from 'ethers'
 import { Op } from 'sequelize'
 import { Network } from '../network'
 
@@ -35,7 +35,6 @@ export interface AllocationReceiptCollectorOptions {
   network: Network
   models: QueryFeeModels
   collectEndpoint: URL
-  allocationExchange: Contract
   allocationClaimThreshold: BigNumber
   voucherExpiration: number
 }
@@ -44,7 +43,6 @@ export class AllocationReceiptCollector implements ReceiptCollector {
   private logger: Logger
   private models: QueryFeeModels
   private network: Network
-  private allocationExchange: Contract
   private collectEndpoint: URL
   private receiptsToCollect!: DHeap<AllocationReceiptsBatch>
   private allocationClaimThreshold: BigNumber
@@ -55,7 +53,6 @@ export class AllocationReceiptCollector implements ReceiptCollector {
     network,
     models,
     collectEndpoint,
-    allocationExchange,
     allocationClaimThreshold,
     voucherExpiration,
   }: AllocationReceiptCollectorOptions) {
@@ -63,7 +60,6 @@ export class AllocationReceiptCollector implements ReceiptCollector {
     this.network = network
     this.models = models
     this.collectEndpoint = collectEndpoint
-    this.allocationExchange = allocationExchange
     this.allocationClaimThreshold = allocationClaimThreshold
     this.voucherExpiration = voucherExpiration
 
@@ -329,7 +325,11 @@ export class AllocationReceiptCollector implements ReceiptCollector {
     }
 
     // Check if a voucher for this allocation was already redeemed
-    if (await this.allocationExchange.allocationsRedeemed(voucher.allocation)) {
+    if (
+      await this.network.contracts.allocationExchange.allocationsRedeemed(
+        voucher.allocation,
+      )
+    ) {
       logger.warn(
         `Query fee voucher for allocation already redeemed, delete local voucher copy`,
       )
@@ -358,9 +358,14 @@ export class AllocationReceiptCollector implements ReceiptCollector {
       }
       // Submit the voucher on chain
       const txReceipt = await this.network.executeTransaction(
-        () => this.allocationExchange.estimateGas.redeem(onchainVoucher),
+        () =>
+          this.network.contracts.allocationExchange.estimateGas.redeem(
+            onchainVoucher,
+          ),
         async gasLimit =>
-          this.allocationExchange.redeem(onchainVoucher, { gasLimit }),
+          this.network.contracts.allocationExchange.redeem(onchainVoucher, {
+            gasLimit,
+          }),
         logger.child({ action: 'redeem' }),
       )
 
