@@ -3,6 +3,7 @@
 ![CI](https://github.com/graphprotocol/indexer/workflows/CI/badge.svg)
 [![Docker Image: Indexer Service](https://github.com/graphprotocol/indexer/workflows/Indexer%20Service%20Image/badge.svg)](https://github.com/orgs/graphprotocol/packages/container/package/indexer-service)
 [![Docker Image: Indexer Agent](https://github.com/graphprotocol/indexer/workflows/Indexer%20Agent%20Image/badge.svg)](https://github.com/orgs/graphprotocol/packages/container/package/indexer-agent)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Flamjay2704%2Findexer.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Flamjay2704%2Findexer?ref=badge_shield)
 
 **NOTE: THIS PROJECT IS BETA SOFTWARE.**
 
@@ -360,3 +361,7 @@ Creating a new release involves the following steps:
 Copyright &copy; 2020-2021 The Graph Foundation
 
 Licensed under the [MIT license](LICENSE).
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Flamjay2704%2Findexer.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Flamjay2704%2Findexer?ref=badge_large)
